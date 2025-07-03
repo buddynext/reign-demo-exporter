@@ -1,0 +1,42 @@
+reign-demo-exporter/
+│
+├── reign-demo-exporter.php              # Main plugin file
+├── README.md                            # Documentation
+├── LICENSE                              # GPL v2 license
+├── .gitignore                           # Git ignore file
+│
+├── includes/                            # Core PHP classes
+│   ├── class-exporter.php              # Core exporter class
+│   ├── class-content-scanner.php       # Scans site content
+│   ├── class-plugin-scanner.php        # Analyzes installed plugins
+│   ├── class-file-scanner.php          # Scans files and directories
+│   ├── class-manifest-generator.php    # Generates JSON manifests
+│   ├── class-package-creator.php       # Creates ZIP packages
+│   └── class-ajax-handler.php          # Handles AJAX requests
+│
+├── admin/                               # Admin interface files
+│   ├── class-admin.php                 # Admin interface class
+│   ├── css/                            # Admin styles
+│   │   └── exporter-admin.css          # Admin CSS
+│   ├── js/                             # Admin scripts
+│   │   └── exporter-admin.js           # Admin JavaScript
+│   └── views/                          # Admin view templates
+│       └── export-page.php             # Main export page template
+│
+├── languages/                           # Translation files
+│   └── reign-demo-exporter.pot         # Translation template
+│
+└── assets/                              # Plugin assets
+    ├── images/                          # Plugin images
+    │   └── icon.png                    # Plugin icon
+    └── banner/                          # WordPress.org assets
+        ├── banner-772x250.png          # Plugin banner
+        └── banner-1544x500.png         # High-res banner
+
+File Creation Order:
+1. Create main folder: reign-demo-exporter
+2. Create subfolders: includes, admin, admin/css, admin/js, admin/views, languages, assets, assets/images, assets/banner
+3. Create all PHP files with provided code
+4. Create CSS and JS files with provided code
+5. Create README.md with provided documentation
+6. Create additional files (LICENSE, .gitignore)

@@ -1,0 +1,324 @@
+/* Reign Demo Exporter Admin Styles */
+
+.reign-demo-exporter-wrap {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.reign-demo-exporter-container {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin-bottom: 20px;
+}
+
+/* Export Box */
+.export-box {
+    padding: 0;
+}
+
+.export-header {
+    background: #f1f1f1;
+    border-bottom: 1px solid #ccd0d4;
+    padding: 15px 20px;
+}
+
+.export-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.export-content {
+    padding: 20px;
+}
+
+.export-files-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.export-files-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.export-files-list li:last-child {
+    border-bottom: none;
+}
+
+.export-files-list code {
+    background: #f3f4f5;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    margin-right: 10px;
+}
+
+/* Export Actions */
+.export-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.export-actions .button {
+    margin: 0 5px;
+}
+
+.button-hero {
+    font-size: 16px !important;
+    line-height: 28px !important;
+    height: 46px !important;
+    padding: 0 36px !important;
+}
+
+/* Progress Section */
+.export-progress {
+    padding: 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+
+.export-progress h3 {
+    margin-top: 0;
+}
+
+.progress-bar-wrapper {
+    position: relative;
+    margin: 20px 0;
+}
+
+.progress-bar {
+    background: #e5e5e5;
+    height: 30px;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    background: #0073aa;
+    height: 100%;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+        45deg,
+        rgba(255,255,255,.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,.2) 50%,
+        rgba(255,255,255,.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 50px 50px;
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.progress-message {
+    margin: 10px 0 0;
+    font-style: italic;
+    color: #666;
+}
+
+/* Requirements Table */
+#requirements-results {
+    padding: 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+
+#requirements-results table {
+    margin-top: 15px;
+}
+
+#requirements-results .success {
+    color: #46b450;
+    font-weight: 600;
+}
+
+#requirements-results .error {
+    color: #dc3232;
+    font-weight: 600;
+}
+
+/* Export History */
+.export-history {
+    padding: 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+
+.export-history h3 {
+    margin-top: 0;
+}
+
+.history-item {
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.history-item p {
+    margin: 5px 0;
+}
+
+/* Existing Exports */
+.existing-exports {
+    padding: 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #e5e5e5;
+}
+
+.existing-exports h3 {
+    margin-top: 0;
+}
+
+.existing-exports table {
+    margin-top: 15px;
+}
+
+/* Success/Error Messages */
+.export-success,
+.export-error {
+    padding: 20px;
+}
+
+.export-success .notice,
+.export-error .notice {
+    margin: 0;
+}
+
+.export-urls {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0;
+}
+
+.export-urls li {
+    padding: 5px 0;
+}
+
+.export-urls a {
+    word-break: break-all;
+}
+
+/* Help Section */
+.reign-demo-exporter-help {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    padding: 20px;
+}
+
+.reign-demo-exporter-help h3 {
+    margin-top: 0;
+    color: #23282d;
+}
+
+.reign-demo-exporter-help h4 {
+    margin-top: 20px;
+    color: #23282d;
+}
+
+.reign-demo-exporter-help ol,
+.reign-demo-exporter-help ul {
+    margin-left: 20px;
+}
+
+.reign-demo-exporter-help li {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .reign-demo-exporter-wrap {
+        margin: 10px 0;
+    }
+    
+    .export-content,
+    .export-progress,
+    .export-history,
+    .existing-exports,
+    .reign-demo-exporter-help {
+        padding: 15px;
+    }
+    
+    .button-hero {
+        display: block;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+    
+    .export-actions {
+        text-align: left;
+    }
+    
+    .existing-exports table {
+        font-size: 12px;
+    }
+}
+
+/* Loading State */
+.reign-demo-exporter-wrap.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Notices */
+.reign-demo-exporter-wrap .notice {
+    padding: 12px;
+}
+
+.reign-demo-exporter-wrap .notice p {
+    margin: 0.5em 0;
+}
+
+/* Button States */
+.button:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* Code Blocks */
+code {
+    font-family: Consolas, Monaco, monospace;
+}
+
+/* Table Styles */
+.widefat td,
+.widefat th {
+    padding: 12px 10px;
+}
+
+.widefat code {
+    background: none;
+    padding: 0;
+}
