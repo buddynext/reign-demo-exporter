@@ -85,5 +85,5 @@ class Reign_Demo_Exporter_Admin {
         $minutes = $minutes % 60;
         
         return sprintf(__('%d hours %d minutes', 'reign-demo-exporter'), $hours, $minutes);
-    }}
+    }
 }

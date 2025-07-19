@@ -21,16 +21,21 @@ class Reign_Demo_Package_Creator {
     
     public function create_package($export_data) {
         try {
-            // Create database export
-            $this->export_database($export_data['content']);
+            // Create SQL database export
+            require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-sql-exporter.php';
+            $sql_exporter = new Reign_Demo_SQL_Exporter();
+            $db_stats = $sql_exporter->export_database($this->temp_dir);
             
-            // Copy media files
-            $this->copy_media_files($export_data['content']['media']);
+            // Export entire uploads directory (includes all media and plugin files)
+            $uploads_exporter = new Reign_Demo_Uploads_Exporter();
+            $uploads_stats = $uploads_exporter->export_uploads_directory($this->temp_dir . 'uploads/');
             
             // Export theme customizations
             $this->export_theme_customizations();
             
-            // Create info file
+            // Create info file with uploads stats and db stats
+            $export_data['uploads_stats'] = $uploads_stats;
+            $export_data['database_stats'] = $db_stats;
             $this->create_info_file($export_data);
             
             // Create ZIP archive
@@ -150,48 +155,6 @@ class Reign_Demo_Package_Creator {
             $this->cleanup_temp_directory();
         }
     }
-} export_database($content_data) {
-        $db_export_file = $this->temp_dir . 'database.json';
-        
-        // Structure the database export
-        $db_export = array(
-            'version' => '1.0',
-            'type' => 'reign-demo-export',
-            'generated' => current_time('c'),
-            'site_url' => get_site_url(),
-            'content' => array(
-                'posts' => $content_data['posts'],
-                'pages' => $content_data['pages'],
-                'menus' => $content_data['menus'],
-                'widgets' => $content_data['widgets'],
-                'users' => $content_data['users'],
-                'taxonomies' => $content_data['taxonomies'],
-                'options' => $content_data['options'],
-                'theme_mods' => $content_data['theme_mods'],
-                'comments' => $content_data['comments']
-            )
-        );
-        
-        // Add plugin-specific data
-        if (isset($content_data['buddypress'])) {
-            $db_export['content']['buddypress'] = $content_data['buddypress'];
-        }
-        
-        if (isset($content_data['woocommerce'])) {
-            $db_export['content']['woocommerce'] = $content_data['woocommerce'];
-        }
-        
-        if (isset($content_data['lms'])) {
-            $db_export['content']['lms'] = $content_data['lms'];
-        }
-        
-        // Write to file
-        $json_data = json_encode($db_export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        
-        if (false === file_put_contents($db_export_file, $json_data)) {
-            throw new Exception(__('Failed to create database export file', 'reign-demo-exporter'));
-        }
-    }
     
     private function copy_media_files($media_items) {
         $upload_dir = wp_upload_dir();
@@ -292,6 +255,7 @@ class Reign_Demo_Package_Creator {
             'export_date' => current_time('c'),
             'wordpress_version' => get_bloginfo('version'),
             'php_version' => PHP_VERSION,
+            'export_type' => 'sql',
             'theme' => array(
                 'name' => wp_get_theme()->get('Name'),
                 'version' => wp_get_theme()->get('Version'),
@@ -299,6 +263,8 @@ class Reign_Demo_Package_Creator {
             ),
             'plugins_count' => count($export_data['plugins']['required']) + count($export_data['plugins']['optional']),
             'content_summary' => isset($export_data['content_summary']) ? $export_data['content_summary'] : array(),
+            'database_stats' => isset($export_data['database_stats']) ? $export_data['database_stats'] : array(),
+            'uploads_stats' => isset($export_data['uploads_stats']) ? $export_data['uploads_stats'] : array(),
             'site_info' => array(
                 'name' => get_bloginfo('name'),
                 'description' => get_bloginfo('description'),
@@ -309,5 +275,4 @@ class Reign_Demo_Package_Creator {
         
         file_put_contents($info_file, json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
-    
-    private function
+}

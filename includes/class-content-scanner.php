@@ -37,13 +37,17 @@ class Reign_Demo_Content_Scanner {
     
     private function get_demo_users() {
         // Get all users with ID >= 100 (standardized demo users)
+        global $wpdb;
+        
+        // Get users with ID >= 100
+        $user_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->users} WHERE ID >= 100");
+        
+        if (empty($user_ids)) {
+            return array();
+        }
+        
         $users = get_users(array(
-            'meta_query' => array(
-                array(
-                    'key' => '_reign_demo_user',
-                    'value' => true
-                )
-            ),
+            'include' => $user_ids,
             'fields' => 'all_with_meta'
         ));
         

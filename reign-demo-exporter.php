@@ -61,11 +61,17 @@ class Reign_Demo_Exporter {
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-plugin-scanner.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-file-scanner.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-manifest-generator.php';
+        require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-uploads-exporter.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-package-creator.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-ajax-handler.php';
         
         if (is_admin()) {
             require_once REIGN_DEMO_EXPORTER_PATH . 'admin/class-admin.php';
+        }
+        
+        // Load WP-CLI command if available
+        if (defined('WP_CLI') && WP_CLI) {
+            require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-cli-command.php';
         }
     }
     

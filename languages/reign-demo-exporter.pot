@@ -1,0 +1,229 @@
+# Copyright (C) 2025 WB Com Designs
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Reign Demo Exporter 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wbcomdesigns.com/\n"
+"POT-Creation-Date: 2025-01-19 12:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: admin/views/export-page.php:19
+msgid "Export Demo Content for Reign Theme"
+msgstr ""
+
+#: admin/views/export-page.php:29
+msgid "This will create the following files in your site root:"
+msgstr ""
+
+#: admin/views/export-page.php:32
+msgid "Main demo configuration"
+msgstr ""
+
+#: admin/views/export-page.php:33
+msgid "Plugin requirements and sources"
+msgstr ""
+
+#: admin/views/export-page.php:34
+msgid "File structure and media information"
+msgstr ""
+
+#: admin/views/export-page.php:35
+msgid "Complete content export package"
+msgstr ""
+
+#: admin/views/export-page.php:40
+msgid "Export files already exist. Running a new export will overwrite them."
+msgstr ""
+
+#: admin/views/export-page.php:46
+msgid "Start Export"
+msgstr ""
+
+#: admin/views/export-page.php:50
+msgid "Check Requirements"
+msgstr ""
+
+#: admin/views/export-page.php:58
+msgid "Export Progress:"
+msgstr ""
+
+#: admin/views/export-page.php:70
+msgid "System Requirements Check"
+msgstr ""
+
+#: admin/views/export-page.php:74
+msgid "Requirement"
+msgstr ""
+
+#: admin/views/export-page.php:75
+msgid "Required"
+msgstr ""
+
+#: admin/views/export-page.php:76
+msgid "Current"
+msgstr ""
+
+#: admin/views/export-page.php:77
+msgid "Status"
+msgstr ""
+
+#: admin/views/export-page.php:89
+msgid "Last Export"
+msgstr ""
+
+#: admin/views/export-page.php:92
+msgid "Date:"
+msgstr ""
+
+#: admin/views/export-page.php:97
+msgid "Content:"
+msgstr ""
+
+#: admin/views/export-page.php:100
+msgid "%d posts, %d pages, %d users, %d active plugins"
+msgstr ""
+
+#: admin/views/export-page.php:111
+msgid "Duration:"
+msgstr ""
+
+#: admin/views/export-page.php:131
+msgid "Current Export Files"
+msgstr ""
+
+#: admin/views/export-page.php:135
+msgid "File"
+msgstr ""
+
+#: admin/views/export-page.php:136
+msgid "Size"
+msgstr ""
+
+#: admin/views/export-page.php:137
+msgid "Modified"
+msgstr ""
+
+#: admin/views/export-page.php:138
+msgid "Actions"
+msgstr ""
+
+#: admin/views/export-page.php:149
+msgid "View"
+msgstr ""
+
+#: admin/views/export-page.php:152
+msgid "Download"
+msgstr ""
+
+#: admin/views/export-page.php:165
+msgid "Export Completed Successfully!"
+msgstr ""
+
+#: admin/views/export-page.php:166
+msgid "Your demo export files have been created and are accessible at:"
+msgstr ""
+
+#: admin/views/export-page.php:183
+msgid "How to Use"
+msgstr ""
+
+#: includes/class-ajax-handler.php:26
+msgid "Security check failed"
+msgstr ""
+
+#: includes/class-ajax-handler.php:31
+msgid "Permission denied"
+msgstr ""
+
+#: includes/class-ajax-handler.php:67
+msgid "Invalid export step"
+msgstr ""
+
+#: includes/class-ajax-handler.php:99
+msgid "Export preparation complete"
+msgstr ""
+
+#: includes/class-ajax-handler.php:115
+msgid "Content scan complete"
+msgstr ""
+
+#: includes/class-ajax-handler.php:131
+msgid "Plugin analysis complete"
+msgstr ""
+
+#: includes/class-ajax-handler.php:147
+msgid "File scan complete"
+msgstr ""
+
+#: includes/class-ajax-handler.php:157
+msgid "Export data not found"
+msgstr ""
+
+#: includes/class-ajax-handler.php:188
+msgid "Manifest files created"
+msgstr ""
+
+#: includes/class-ajax-handler.php:219
+msgid "Content package created"
+msgstr ""
+
+#: includes/class-ajax-handler.php:260
+msgid "Export completed successfully!"
+msgstr ""
+
+#: includes/class-ajax-handler.php:304
+msgid "PHP Version"
+msgstr ""
+
+#: includes/class-ajax-handler.php:310
+msgid "WordPress Version"
+msgstr ""
+
+#: includes/class-ajax-handler.php:316
+msgid "Memory Limit"
+msgstr ""
+
+#: includes/class-ajax-handler.php:322
+msgid "Max Execution Time"
+msgstr ""
+
+#: includes/class-ajax-handler.php:328
+msgid "Reign Theme"
+msgstr ""
+
+#: includes/class-ajax-handler.php:329
+msgid "Active"
+msgstr ""
+
+#: includes/class-ajax-handler.php:330
+msgid "Not Active"
+msgstr ""
+
+#: includes/class-ajax-handler.php:334
+msgid "Available Disk Space"
+msgstr ""
+
+#: includes/class-ajax-handler.php:340
+msgid "Export Directory"
+msgstr ""
+
+#: includes/class-ajax-handler.php:341
+msgid "Writable"
+msgstr ""
+
+#: includes/class-ajax-handler.php:342
+msgid "Not Writable"
+msgstr ""
+
+#: reign-demo-exporter.php:74
+msgid "Load text domain failed"
+msgstr ""
+
+#: reign-demo-exporter.php:80
+msgid "Reign Demo Export"
+msgstr ""

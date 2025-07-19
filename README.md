@@ -33,6 +33,8 @@ The Reign Demo Exporter is a WordPress plugin that creates standardized export f
 
 ## Usage
 
+### Admin Interface
+
 1. **Navigate to Export Tool**
 
    - Go to Tools → Reign Demo Export in your WordPress admin
@@ -51,6 +53,64 @@ The Reign Demo Exporter is a WordPress plugin that creates standardized export f
 4. **Export Complete**
    - Once complete, you'll see download links for all export files
    - Files are automatically saved to `/wp-content/reign-demo-export/`
+
+### WP-CLI Commands
+
+The plugin includes comprehensive WP-CLI support for command-line exports:
+
+#### Export Command
+```bash
+# Basic export
+wp reign-demo export
+
+# Force export (overwrite existing files without confirmation)
+wp reign-demo export --force
+
+# Skip requirements check
+wp reign-demo export --skip-requirements-check
+
+# Quiet mode (minimal output)
+wp reign-demo export --quiet
+
+# Export with JSON output format
+wp reign-demo export --format=json
+```
+
+#### Check Requirements
+```bash
+# Check system requirements
+wp reign-demo check-requirements
+
+# Output as JSON
+wp reign-demo check-requirements --format=json
+```
+
+#### List Export Files
+```bash
+# List existing export files
+wp reign-demo list
+
+# Output as JSON
+wp reign-demo list --format=json
+```
+
+#### Clean Export Files
+```bash
+# Delete export files (with confirmation)
+wp reign-demo clean
+
+# Force delete without confirmation
+wp reign-demo clean --force
+```
+
+#### Export Information
+```bash
+# Get information about the last export
+wp reign-demo info
+
+# Output as JSON
+wp reign-demo info --format=json
+```
 
 ## Generated Files
 
@@ -88,11 +148,13 @@ File structure information including:
 
 Complete content export including:
 
-- **database.json**: All WordPress core content
-- **custom-tables.sql**: CREATE and INSERT statements for all custom tables
+- **database/**: SQL dumps for all database tables
+  - Individual `.sql` files for each table (gzipped if >1MB)
+  - `complete-export.sql.gz`: Combined SQL file for easy import
+  - `import-order.json`: Specifies correct table import sequence
 - **uploads/**: Complete uploads directory with all files
 - **theme/**: Theme customizations
-- **plugin-data/**: Additional plugin directories
+- **export-info.json**: Export metadata and statistics
 
 ## What Gets Exported
 
@@ -103,6 +165,11 @@ Complete content export including:
 - All custom tables (bp*\*, wc*\*, etc.)
 - Comments, menus, widgets
 - Theme settings and options
+- Exported as SQL dumps with:
+  - Table structure (CREATE TABLE)
+  - Data (INSERT statements)
+  - Automatic chunking for large tables
+  - Excluded transients and cache data
 
 ### File System
 
@@ -142,9 +209,10 @@ All exported files are automatically accessible via:
 
 ### User Data
 
-- Only demo users (ID 100+) with `_reign_demo_user` meta are exported
+- All users with ID 100+ are exported as demo users
 - User passwords are exported in hashed form
 - Email addresses are preserved for demo purposes
+- User metadata is included
 
 ### Security
 
@@ -226,14 +294,50 @@ For issues or questions:
 - Documentation: https://wbcomdesigns.com/docs/reign-theme/
 - Support: support@wbcomdesigns.com
 
+## Import Instructions
+
+### Database Import
+
+1. **Quick Import** (Recommended)
+   ```bash
+   # Import complete database
+   gunzip -c complete-export.sql.gz | mysql -u username -p database_name
+   ```
+
+2. **Table-by-Table Import**
+   - Follow the order specified in `import-order.json`
+   - Import gzipped files:
+     ```bash
+     gunzip -c table_name.sql.gz | mysql -u username -p database_name
+     ```
+   - Import regular SQL files:
+     ```bash
+     mysql -u username -p database_name < table_name.sql
+     ```
+
+3. **Files Import**
+   - Extract uploads folder to `wp-content/uploads/`
+   - Extract theme customizations to appropriate theme directory
+
+### Import Notes
+
+- SQL files automatically handle table creation
+- Large tables are chunked but import seamlessly
+- Transients and cache data are excluded
+- Update site URL after import if needed
+
 ## Changelog
 
 ### Version 1.0.0
 
 - Initial release
-- Table-by-table database export
+- SQL-based database export (instead of JSON)
+- Automatic compression for large SQL files
+- Table chunking for memory efficiency
+- Import order management
 - Complete uploads directory copying
 - Support for all plugin-specific folders
 - Automatic folder detection
 - Progress tracking
 - Requirements checker
+- WP-CLI support
