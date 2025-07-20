@@ -1,5 +1,19 @@
 /* Reign Demo Exporter Admin Styles */
 
+/* Hide empty error notices */
+.reign-demo-exporter-wrap .notice-error:empty,
+.reign-demo-exporter-wrap .notice-error .error-message:empty {
+    display: none !important;
+}
+
+.reign-demo-exporter-wrap .notice-error {
+    display: none;
+}
+
+.reign-demo-exporter-wrap .notice-error:has(.error-message:not(:empty)) {
+    display: block;
+}
+
 .reign-demo-exporter-wrap {
     max-width: 1200px;
     margin: 20px 0;

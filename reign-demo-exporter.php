@@ -53,9 +53,14 @@ class Reign_Demo_Exporter {
         // AJAX handlers
         add_action('wp_ajax_reign_demo_export_step', array($this, 'handle_export_step'));
         add_action('wp_ajax_reign_demo_check_requirements', array($this, 'check_requirements'));
+        add_action('wp_ajax_reign_demo_delete_export', array($this, 'handle_delete_export'));
+        add_action('wp_ajax_reign_demo_delete_all_exports', array($this, 'handle_delete_all_exports'));
         
         // Create export directory on activation
         register_activation_hook(__FILE__, array($this, 'activate'));
+        
+        // Add plugin action links
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_action_links'));
     }
     
     private function load_dependencies() {
@@ -158,6 +163,16 @@ class Reign_Demo_Exporter {
         $ajax_handler->check_system_requirements();
     }
     
+    public function handle_delete_export() {
+        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler->delete_export_file();
+    }
+    
+    public function handle_delete_all_exports() {
+        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler->delete_all_export_files();
+    }
+    
     public function activate() {
         // Create export directory
         if (!file_exists(REIGN_DEMO_EXPORT_DIR)) {
@@ -180,6 +195,21 @@ Options -Indexes
         
         // Create index.php for security
         @file_put_contents(REIGN_DEMO_EXPORT_DIR . 'index.php', '<?php // Silence is golden');
+    }
+    
+    /**
+     * Add plugin action links
+     * 
+     * @param array $links Existing plugin action links
+     * @return array Modified plugin action links
+     */
+    public function add_action_links($links) {
+        $settings_link = '<a href="' . admin_url('options-general.php?page=reign-demo-exporter-settings') . '">' . __('Settings', 'reign-demo-exporter') . '</a>';
+        
+        // Add settings link after deactivate link
+        array_splice($links, 1, 0, array($settings_link));
+        
+        return $links;
     }
 }
 

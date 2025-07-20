@@ -396,4 +396,76 @@ class Reign_Demo_Ajax_Handler {
     private function format_bytes($bytes, $precision = 2) {
         return Reign_Demo_Exporter_Utils::format_bytes($bytes, $precision);
     }
+    
+    /**
+     * Delete a single export file
+     */
+    public function delete_export_file() {
+        // Verify request
+        $verification = Reign_Demo_Exporter_Utils::verify_ajax_request();
+        if (is_wp_error($verification)) {
+            wp_send_json_error(array('message' => $verification->get_error_message()));
+        }
+        
+        $file = isset($_POST['file']) ? sanitize_text_field($_POST['file']) : '';
+        
+        // Validate filename
+        $allowed_files = array('manifest.json', 'plugins-manifest.json', 'files-manifest.json', 'content-package.zip');
+        if (!in_array($file, $allowed_files)) {
+            wp_send_json_error(array('message' => __('Invalid file name', 'reign-demo-exporter')));
+        }
+        
+        $file_path = REIGN_DEMO_EXPORT_DIR . $file;
+        
+        if (file_exists($file_path)) {
+            if (unlink($file_path)) {
+                wp_send_json_success(array(
+                    'message' => sprintf(__('File %s deleted successfully', 'reign-demo-exporter'), $file),
+                    'remaining_exports' => Reign_Demo_Exporter_Utils::check_existing_exports()
+                ));
+            } else {
+                wp_send_json_error(array('message' => sprintf(__('Failed to delete file %s', 'reign-demo-exporter'), $file)));
+            }
+        } else {
+            wp_send_json_error(array('message' => sprintf(__('File %s not found', 'reign-demo-exporter'), $file)));
+        }
+    }
+    
+    /**
+     * Delete all export files
+     */
+    public function delete_all_export_files() {
+        // Verify request
+        $verification = Reign_Demo_Exporter_Utils::verify_ajax_request();
+        if (is_wp_error($verification)) {
+            wp_send_json_error(array('message' => $verification->get_error_message()));
+        }
+        
+        $files = array('manifest.json', 'plugins-manifest.json', 'files-manifest.json', 'content-package.zip');
+        $deleted = 0;
+        $errors = array();
+        
+        foreach ($files as $file) {
+            $file_path = REIGN_DEMO_EXPORT_DIR . $file;
+            if (file_exists($file_path)) {
+                if (unlink($file_path)) {
+                    $deleted++;
+                } else {
+                    $errors[] = sprintf(__('Failed to delete %s', 'reign-demo-exporter'), $file);
+                }
+            }
+        }
+        
+        if (!empty($errors)) {
+            wp_send_json_error(array(
+                'message' => implode(', ', $errors),
+                'deleted' => $deleted
+            ));
+        } else {
+            wp_send_json_success(array(
+                'message' => sprintf(__('Successfully deleted %d export files', 'reign-demo-exporter'), $deleted),
+                'deleted' => $deleted
+            ));
+        }
+    }
 }

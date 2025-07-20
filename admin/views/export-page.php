@@ -161,11 +161,19 @@ $last_export = isset($args['last_export']) ? $args['last_export'] : array();
                             <a href="<?php echo esc_url($file['url']); ?>" class="button button-small" download>
                                 <?php _e('Download', 'reign-demo-exporter'); ?>
                             </a>
+                            <button class="button button-small delete-export-file" data-file="<?php echo esc_attr($file['name']); ?>">
+                                <?php _e('Delete', 'reign-demo-exporter'); ?>
+                            </button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <p style="margin-top: 10px;">
+                <button class="button button-secondary delete-all-exports">
+                    <?php _e('Delete All Export Files', 'reign-demo-exporter'); ?>
+                </button>
+            </p>
         </div>
         <?php endif; ?>
         

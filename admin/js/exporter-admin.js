@@ -1,6 +1,16 @@
 jQuery(document).ready(function($) {
     'use strict';
     
+    // Remove any empty error notices on page load
+    $('.wrap.reign-demo-exporter-wrap .notice-error').each(function() {
+        var $notice = $(this);
+        var $errorMessage = $notice.find('.error-message, p');
+        
+        if ($errorMessage.length === 0 || $errorMessage.text().trim() === '') {
+            $notice.remove();
+        }
+    });
+    
     // Export steps
     const exportSteps = [
         { step: 'preparing', message: 'Preparing export...', weight: 5 },
@@ -32,6 +42,81 @@ jQuery(document).ready(function($) {
     // Check Requirements button click
     $('#check-requirements').on('click', function() {
         checkRequirements();
+    });
+    
+    // Delete single export file
+    $(document).on('click', '.delete-export-file', function() {
+        const $button = $(this);
+        const fileName = $button.data('file');
+        
+        if (!confirm('Are you sure you want to delete ' + fileName + '?')) {
+            return;
+        }
+        
+        $button.prop('disabled', true).text('Deleting...');
+        
+        $.ajax({
+            url: reign_demo_exporter.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'reign_demo_delete_export',
+                nonce: reign_demo_exporter.nonce,
+                file: fileName
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Remove the row from table
+                    $button.closest('tr').fadeOut(400, function() {
+                        $(this).remove();
+                        
+                        // If no more files, reload page to hide the table
+                        if (response.data.remaining_exports.length === 0) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    alert(response.data.message);
+                    $button.prop('disabled', false).text('Delete');
+                }
+            },
+            error: function() {
+                alert('Failed to delete file. Please try again.');
+                $button.prop('disabled', false).text('Delete');
+            }
+        });
+    });
+    
+    // Delete all export files
+    $(document).on('click', '.delete-all-exports', function() {
+        if (!confirm('Are you sure you want to delete ALL export files? This action cannot be undone.')) {
+            return;
+        }
+        
+        const $button = $(this);
+        $button.prop('disabled', true).text('Deleting all files...');
+        
+        $.ajax({
+            url: reign_demo_exporter.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'reign_demo_delete_all_exports',
+                nonce: reign_demo_exporter.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('.existing-exports').fadeOut(400, function() {
+                        location.reload();
+                    });
+                } else {
+                    alert(response.data.message);
+                    $button.prop('disabled', false).text('Delete All Export Files');
+                }
+            },
+            error: function() {
+                alert('Failed to delete files. Please try again.');
+                $button.prop('disabled', false).text('Delete All Export Files');
+            }
+        });
     });
     
     function startExport() {
