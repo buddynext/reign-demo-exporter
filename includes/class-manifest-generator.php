@@ -30,18 +30,26 @@ class Reign_Demo_Manifest_Generator {
         $content_scanner = new Reign_Demo_Content_Scanner();
         $content_summary = $content_scanner->get_content_summary();
         
+        // Get settings
+        $settings_obj = new Reign_Demo_Exporter_Settings();
+        $settings = $settings_obj->get_settings();
+        
         // Get feature list based on active plugins
         $features = $this->determine_features();
         
         // Get demo requirements
         $requirements = $this->determine_requirements();
         
-        // Get tags for the demo
-        $tags = $this->generate_tags($demo_info['category'], $features);
+        // Use tags from settings or generate default
+        $tags = !empty($settings['demo_tags']) ? 
+            array_map('trim', explode(',', $settings['demo_tags'])) : 
+            $this->generate_tags($demo_info['category'], $features);
         
         $manifest = array(
-            'demo_id' => $demo_info['demo_id'],
-            'demo_name' => $demo_info['demo_name'],
+            'demo_id' => !empty($settings['demo_id']) ? $settings['demo_id'] : $demo_info['demo_id'],
+            'demo_name' => !empty($settings['demo_name']) ? $settings['demo_name'] : $demo_info['demo_name'],
+            'demo_category' => !empty($settings['demo_category']) ? $settings['demo_category'] : 'community',
+            'demo_description' => !empty($settings['demo_description']) ? $settings['demo_description'] : '',
             'theme' => $demo_info['theme'],
             'theme_version' => $demo_info['theme_version'],
             'export_version' => $demo_info['export_version'],
@@ -305,13 +313,7 @@ class Reign_Demo_Manifest_Generator {
     }
     
     private function get_directory_size($dir) {
-        $size = 0;
-        
-        foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
-            $size += is_file($each) ? filesize($each) : $this->get_directory_size($each);
-        }
-        
-        return $size;
+        return Reign_Demo_Exporter_Utils::get_directory_size($dir);
     }
     
     private function count_files_in_directory($dir) {
@@ -331,14 +333,6 @@ class Reign_Demo_Manifest_Generator {
     }
     
     private function format_bytes($bytes, $precision = 2) {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-        
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        
-        $bytes /= pow(1024, $pow);
-        
-        return round($bytes, $precision) . $units[$pow];
+        return Reign_Demo_Exporter_Utils::format_bytes($bytes, $precision);
     }
 }

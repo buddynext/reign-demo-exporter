@@ -21,17 +21,24 @@ class Reign_Demo_Ajax_Handler {
     }
     
     public function process_export_step() {
-        // Check nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'reign_demo_export_nonce')) {
-            wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-exporter')));
+        // Verify request
+        $verification = Reign_Demo_Exporter_Utils::verify_ajax_request();
+        if (is_wp_error($verification)) {
+            wp_send_json_error(array('message' => $verification->get_error_message()));
         }
         
-        // Check permissions
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'reign-demo-exporter')));
-        }
+        $step = isset($_POST['step']) ? sanitize_text_field($_POST['step']) : '';
         
-        $step = sanitize_text_field($_POST['step']);
+        // Validate step
+        $valid_steps = array(
+            'preparing', 'scanning_content', 'analyzing_plugins', 
+            'scanning_files', 'creating_manifests', 'packaging_content', 
+            'finalizing'
+        );
+        
+        if (!in_array($step, $valid_steps)) {
+            wp_send_json_error(array('message' => __('Invalid export step', 'reign-demo-exporter')));
+        }
         
         try {
             switch ($step) {
@@ -265,14 +272,10 @@ class Reign_Demo_Ajax_Handler {
     }
     
     public function get_export_results() {
-        // Check nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'reign_demo_export_nonce')) {
-            wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-exporter')));
-        }
-        
-        // Check permissions
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'reign-demo-exporter')));
+        // Verify request
+        $verification = Reign_Demo_Exporter_Utils::verify_ajax_request();
+        if (is_wp_error($verification)) {
+            wp_send_json_error(array('message' => $verification->get_error_message()));
         }
         
         $last_export = get_option('reign_demo_last_export');
@@ -289,14 +292,10 @@ class Reign_Demo_Ajax_Handler {
     }
     
     public function check_system_requirements() {
-        // Check nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'reign_demo_export_nonce')) {
-            wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-exporter')));
-        }
-        
-        // Check permissions
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => __('Permission denied', 'reign-demo-exporter')));
+        // Verify request
+        $verification = Reign_Demo_Exporter_Utils::verify_ajax_request();
+        if (is_wp_error($verification)) {
+            wp_send_json_error(array('message' => $verification->get_error_message()));
         }
         
         $requirements = array(
@@ -395,14 +394,6 @@ class Reign_Demo_Ajax_Handler {
     }
     
     private function format_bytes($bytes, $precision = 2) {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-        
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        
-        $bytes /= pow(1024, $pow);
-        
-        return round($bytes, $precision) . ' ' . $units[$pow];
+        return Reign_Demo_Exporter_Utils::format_bytes($bytes, $precision);
     }
 }

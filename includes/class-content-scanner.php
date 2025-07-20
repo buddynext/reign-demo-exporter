@@ -36,11 +36,23 @@ class Reign_Demo_Content_Scanner {
     }
     
     private function get_demo_users() {
-        // Get all users with ID >= 100 (standardized demo users)
         global $wpdb;
         
-        // Get users with ID >= 100
-        $user_ids = $wpdb->get_col("SELECT ID FROM {$wpdb->users} WHERE ID >= 100");
+        // Get settings
+        $settings_obj = new Reign_Demo_Exporter_Settings();
+        $settings = $settings_obj->get_settings();
+        
+        if (!$settings['export_users']) {
+            return array();
+        }
+        
+        $min_user_id = absint($settings['min_user_id']) ?: 100;
+        
+        // Get users with ID >= min_user_id
+        $user_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT ID FROM {$wpdb->users} WHERE ID >= %d",
+            $min_user_id
+        ));
         
         if (empty($user_ids)) {
             return array();

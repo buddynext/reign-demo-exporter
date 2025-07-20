@@ -11,7 +11,8 @@ if (!defined('ABSPATH')) {
 
 class Reign_Demo_SQL_Exporter {
     
-    private $chunk_size = 1000;
+    private $chunk_size;
+    private $compress_threshold;
     private $excluded_options = array(
         '_transient_%',
         '_site_transient_%',
@@ -19,6 +20,15 @@ class Reign_Demo_SQL_Exporter {
         'rewrite_rules',
         '_edit_lock_%'
     );
+    
+    public function __construct() {
+        // Get settings
+        $settings_obj = new Reign_Demo_Exporter_Settings();
+        $settings = $settings_obj->get_settings();
+        
+        $this->chunk_size = absint($settings['chunk_size']) ?: 1000;
+        $this->compress_threshold = floatval($settings['compress_threshold']) * 1048576; // Convert MB to bytes
+    }
     
     /**
      * Export database as SQL files
@@ -97,7 +107,7 @@ class Reign_Demo_SQL_Exporter {
         fclose($handle);
         
         // Compress if large
-        if (filesize($filename) > 1048576) { // 1MB
+        if (filesize($filename) > $this->compress_threshold) {
             $this->compress_file($filename);
         }
     }
@@ -216,6 +226,22 @@ class Reign_Demo_SQL_Exporter {
     private function get_all_tables() {
         global $wpdb;
         
+        // Get settings
+        $settings_obj = new Reign_Demo_Exporter_Settings();
+        $settings = $settings_obj->get_settings();
+        
+        // Parse excluded tables from settings
+        $excluded_patterns = array();
+        if (!empty($settings['exclude_tables'])) {
+            $lines = explode("\n", $settings['exclude_tables']);
+            foreach ($lines as $line) {
+                $pattern = trim($line);
+                if (!empty($pattern)) {
+                    $excluded_patterns[] = $pattern;
+                }
+            }
+        }
+        
         $tables = array();
         $all_tables = $wpdb->get_results("SHOW TABLES", ARRAY_N);
         
@@ -224,7 +250,22 @@ class Reign_Demo_SQL_Exporter {
             
             // Only export tables with our prefix
             if (strpos($table_name, $wpdb->prefix) === 0) {
-                $tables[] = $table_name;
+                // Check if table should be excluded
+                $exclude = false;
+                $clean_name = str_replace($wpdb->prefix, '', $table_name);
+                
+                foreach ($excluded_patterns as $pattern) {
+                    // Convert wildcard pattern to regex
+                    $regex_pattern = str_replace('*', '.*', $pattern);
+                    if (preg_match('/^' . $regex_pattern . '$/', $clean_name)) {
+                        $exclude = true;
+                        break;
+                    }
+                }
+                
+                if (!$exclude) {
+                    $tables[] = $table_name;
+                }
             }
         }
         
@@ -323,17 +364,6 @@ class Reign_Demo_SQL_Exporter {
      * Get directory size
      */
     private function get_directory_size($dir) {
-        $size = 0;
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dir)
-        );
-        
-        foreach ($iterator as $file) {
-            if ($file->isFile()) {
-                $size += $file->getSize();
-            }
-        }
-        
-        return $size;
+        return Reign_Demo_Exporter_Utils::get_directory_size($dir);
     }
 }

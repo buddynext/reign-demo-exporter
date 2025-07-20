@@ -394,15 +394,8 @@ class Reign_Demo_CLI_Command {
      * Check if export files already exist
      */
     private function check_existing_exports() {
-        $files = array('manifest.json', 'plugins-manifest.json', 'files-manifest.json', 'content-package.zip');
-        
-        foreach ($files as $file) {
-            if (file_exists(REIGN_DEMO_EXPORT_DIR . $file)) {
-                return true;
-            }
-        }
-        
-        return false;
+        $exports = Reign_Demo_Exporter_Utils::check_existing_exports();
+        return !empty($exports);
     }
     
     /**
@@ -489,10 +482,7 @@ class Reign_Demo_CLI_Command {
      * Format file size
      */
     private function format_file_size($bytes) {
-        if ($bytes < 1024) return $bytes . ' B';
-        if ($bytes < 1048576) return round($bytes / 1024, 2) . ' KB';
-        if ($bytes < 1073741824) return round($bytes / 1048576, 2) . ' MB';
-        return round($bytes / 1073741824, 2) . ' GB';
+        return Reign_Demo_Exporter_Utils::format_bytes($bytes);
     }
 }
 

@@ -15,8 +15,16 @@ class Reign_Demo_Package_Creator {
     private $zip_file;
     
     public function __construct() {
-        $this->temp_dir = WP_CONTENT_DIR . '/reign-demo-temp-' . uniqid() . '/';
-        wp_mkdir_p($this->temp_dir);
+        // Use more secure random string
+        $random_suffix = wp_generate_password(12, false, false);
+        $this->temp_dir = WP_CONTENT_DIR . '/reign-demo-temp-' . $random_suffix . '/';
+        
+        if (!wp_mkdir_p($this->temp_dir)) {
+            throw new Exception(__('Failed to create temporary directory', 'reign-demo-exporter'));
+        }
+        
+        // Set restrictive permissions
+        @chmod($this->temp_dir, 0755);
     }
     
     public function create_package($export_data) {
@@ -26,9 +34,16 @@ class Reign_Demo_Package_Creator {
             $sql_exporter = new Reign_Demo_SQL_Exporter();
             $db_stats = $sql_exporter->export_database($this->temp_dir);
             
-            // Export entire uploads directory (includes all media and plugin files)
-            $uploads_exporter = new Reign_Demo_Uploads_Exporter();
-            $uploads_stats = $uploads_exporter->export_uploads_directory($this->temp_dir . 'uploads/');
+            // Get settings
+            $settings_obj = new Reign_Demo_Exporter_Settings();
+            $settings = $settings_obj->get_settings();
+            
+            // Export entire uploads directory if enabled
+            $uploads_stats = array('total_size' => 0, 'file_count' => 0);
+            if ($settings['export_media']) {
+                $uploads_exporter = new Reign_Demo_Uploads_Exporter();
+                $uploads_stats = $uploads_exporter->export_uploads_directory($this->temp_dir . 'uploads/');
+            }
             
             // Export theme customizations
             $this->export_theme_customizations();
@@ -103,50 +118,11 @@ class Reign_Demo_Package_Creator {
     }
     
     private function copy_directory($source, $destination) {
-        if (!is_dir($destination)) {
-            wp_mkdir_p($destination);
-        }
-        
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
-        
-        foreach ($iterator as $file) {
-            $source_file = $file->getRealPath();
-            $dest_file = $destination . '/' . $iterator->getSubPathName();
-            
-            if ($file->isDir()) {
-                wp_mkdir_p($dest_file);
-            } else {
-                $dest_dir = dirname($dest_file);
-                if (!is_dir($dest_dir)) {
-                    wp_mkdir_p($dest_dir);
-                }
-                copy($source_file, $dest_file);
-            }
-        }
+        Reign_Demo_Exporter_Utils::copy_directory($source, $destination);
     }
     
     private function cleanup_temp_directory() {
-        if (!is_dir($this->temp_dir)) {
-            return;
-        }
-        
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->temp_dir, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-        
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
-            }
-        }
-        
-        rmdir($this->temp_dir);
+        Reign_Demo_Exporter_Utils::cleanup_directory($this->temp_dir);
     }
     
     public function __destruct() {

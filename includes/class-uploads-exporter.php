@@ -21,27 +21,88 @@ class Reign_Demo_Uploads_Exporter {
     }
     
     private function set_excluded_patterns() {
-        // Only exclude backup and cache directories
+        // Comprehensive list of patterns to exclude
         $this->excluded_patterns = array(
-            // Backup directories
+            // Backup directories and files
             'backups',
+            'backup',
             'updraft',
+            'updraftplus',
             'backwpup',
             'duplicator',
             'ai1wm-backups',
+            'wpvivid-backups',
+            'wp-clone',
+            'akeeba-backup',
+            'wp-staging',
+            'backupbuddy',
+            'xcloner',
             
             // Cache directories
             'cache',
             'wp-cache',
             'w3tc',
+            'w3-total-cache',
+            'wp-rocket-cache',
+            'wp-fastest-cache',
+            'litespeed-cache',
+            'autoptimize',
+            'breeze-cache',
+            'hummingbird-cache',
+            'swift-performance',
+            'wp-optimize-cache',
+            'cachify',
+            
+            // Log files and directories
+            'logs',
+            'log',
+            'debug.log',
+            'error_log',
+            'access_log',
+            'wp-content-debug.log',
+            '.log',
             
             // Temporary files
             'tmp',
             'temp',
+            'temporary',
+            '.tmp',
+            
+            // Security and maintenance
+            'quarantine',
+            'wp-security-backup',
+            'sucuri',
+            'wordfence',
+            'ithemes-security',
+            
+            // Development files
+            '.git',
+            '.svn',
+            '.hg',
+            'node_modules',
+            'bower_components',
+            '.sass-cache',
             
             // System files
             '.DS_Store',
-            'Thumbs.db'
+            'Thumbs.db',
+            'desktop.ini',
+            '.htaccess-bak',
+            '.user.ini-bak',
+            
+            // Large generated files
+            'wp-statistics',
+            'matomo',
+            'piwik',
+            'analytics-cache',
+            
+            // Other backup plugins
+            'migrate',
+            'migration',
+            'wp-migrate-db',
+            'all-in-one-migration',
+            'velvet-blues',
+            'wp-clone-template'
         );
     }
     
@@ -87,17 +148,19 @@ class Reign_Demo_Uploads_Exporter {
                 continue;
             }
             
-            // Check if item should be excluded
-            if ($this->should_exclude($item)) {
-                $this->export_stats['excluded_items']++;
-                continue;
-            }
-            
             $source_path = $source . '/' . $item;
             $dest_path = $destination . '/' . $item;
             $relative_path = $base_path ? $base_path . '/' . $item : $item;
             
-            if (is_dir($source_path)) {
+            $is_directory = is_dir($source_path);
+            
+            // Check if item should be excluded
+            if ($this->should_exclude($item, $is_directory)) {
+                $this->export_stats['excluded_items']++;
+                continue;
+            }
+            
+            if ($is_directory) {
                 // Track directories
                 if (!preg_match('/^\d{4}$/', $item)) { // Skip year directories in stats
                     $this->export_stats['directories'][$item] = array(
@@ -121,15 +184,53 @@ class Reign_Demo_Uploads_Exporter {
     /**
      * Determine if item should be excluded
      */
-    private function should_exclude($item) {
+    private function should_exclude($item, $is_directory = false) {
+        // Convert to lowercase for case-insensitive comparison
+        $item_lower = strtolower($item);
+        
         foreach ($this->excluded_patterns as $pattern) {
-            if (stripos($item, $pattern) !== false) {
+            $pattern_lower = strtolower($pattern);
+            
+            // Check for exact match or partial match
+            if ($item_lower === $pattern_lower || stripos($item_lower, $pattern_lower) !== false) {
                 return true;
             }
         }
         
-        // Exclude large archive files
-        if (preg_match('/\.(zip|tar|gz|rar|7z)$/i', $item)) {
+        // Additional file type exclusions
+        $excluded_extensions = array(
+            // Archive files
+            'zip', 'tar', 'gz', 'bz2', 'rar', '7z', 'tgz',
+            // Backup files
+            'bak', 'backup', 'old', 'orig', 'original',
+            // SQL dumps
+            'sql', 'mysql', 'pgsql',
+            // Log files
+            'log', 'err', 'error',
+            // Temporary files
+            'tmp', 'temp', 'swp', 'swo',
+            // Large video formats (usually not needed for demos)
+            'mov', 'avi', 'wmv', 'flv', 'mkv', 'm4v'
+        );
+        
+        // Check file extensions
+        $extension = pathinfo($item, PATHINFO_EXTENSION);
+        if ($extension && in_array(strtolower($extension), $excluded_extensions)) {
+            return true;
+        }
+        
+        // Exclude hidden files and folders (starting with .)
+        if (strpos($item, '.') === 0 && $item !== '.htaccess') {
+            return true;
+        }
+        
+        // Exclude files with backup patterns in name
+        if (preg_match('/(backup|bkp|bak|old|copy|duplicate|archive)[-_.]?\d*\./i', $item)) {
+            return true;
+        }
+        
+        // Exclude date-based backup patterns (e.g., file-2023-01-01.ext)
+        if (preg_match('/[-_]\d{4}[-_]\d{2}[-_]\d{2}[-_]?\d*\./i', $item)) {
             return true;
         }
         
@@ -204,8 +305,15 @@ class Reign_Demo_Uploads_Exporter {
             'directories' => $this->export_stats['directories'],
             'notes' => array(
                 'Files over 100MB were excluded',
-                'Archive files (zip, tar, etc.) were excluded',
-                'Backup and cache directories were excluded'
+                'Archive files (zip, tar, gz, rar, 7z) were excluded',
+                'Backup directories and files were excluded',
+                'Cache directories were excluded',
+                'Log files and directories were excluded',
+                'Temporary files and directories were excluded',
+                'SQL dump files were excluded',
+                'Hidden files and directories were excluded (except .htaccess)',
+                'Development files (git, svn, node_modules) were excluded',
+                'Files with backup patterns in names were excluded'
             )
         );
         

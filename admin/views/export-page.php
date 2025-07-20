@@ -28,6 +28,16 @@ $last_export = isset($args['last_export']) ? $args['last_export'] : array();
             <div class="export-content">
                 <p><?php _e('This will create the following files in your site root:', 'reign-demo-exporter'); ?></p>
                 
+                <div class="notice notice-info inline">
+                    <p>
+                        <?php _e('Before exporting, you may want to', 'reign-demo-exporter'); ?> 
+                        <a href="<?php echo admin_url('options-general.php?page=reign-demo-exporter-settings'); ?>">
+                            <?php _e('configure the export settings', 'reign-demo-exporter'); ?>
+                        </a> 
+                        <?php _e('to customize what data is included.', 'reign-demo-exporter'); ?>
+                    </p>
+                </div>
+                
                 <ul class="export-files-list">
                     <li><code>manifest.json</code> - <?php _e('Main demo configuration', 'reign-demo-exporter'); ?></li>
                     <li><code>plugins-manifest.json</code> - <?php _e('Plugin requirements and sources', 'reign-demo-exporter'); ?></li>

@@ -12,6 +12,11 @@ if (!defined('ABSPATH')) {
 class Reign_Demo_Exporter_Admin {
     
     public function render() {
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.', 'reign-demo-exporter'));
+        }
+        
         // Check if export files already exist
         $existing_exports = $this->check_existing_exports();
         $last_export = get_option('reign_demo_last_export', array());
@@ -41,32 +46,7 @@ class Reign_Demo_Exporter_Admin {
     }
     
     private function check_existing_exports() {
-        $exports = array();
-        $export_dir = REIGN_DEMO_EXPORT_DIR;
-        
-        $files = array('manifest.json', 'plugins-manifest.json', 'files-manifest.json', 'content-package.zip');
-        
-        foreach ($files as $file) {
-            $file_path = $export_dir . $file;
-            if (file_exists($file_path)) {
-                $exports[] = array(
-                    'name' => $file,
-                    'path' => $file_path,
-                    'url' => REIGN_DEMO_EXPORT_URL . $file,
-                    'size' => $this->format_file_size(filesize($file_path)),
-                    'modified' => date_i18n(get_option('date_format') . ' ' . get_option('time_format'), filemtime($file_path))
-                );
-            }
-        }
-        
-        return $exports;
-    }
-    
-    private function format_file_size($bytes) {
-        if ($bytes < 1024) return $bytes . ' B';
-        if ($bytes < 1048576) return round($bytes / 1024, 2) . ' KB';
-        if ($bytes < 1073741824) return round($bytes / 1048576, 2) . ' MB';
-        return round($bytes / 1073741824, 2) . ' GB';
+        return Reign_Demo_Exporter_Utils::check_existing_exports();
     }
     
     private function format_duration($seconds) {

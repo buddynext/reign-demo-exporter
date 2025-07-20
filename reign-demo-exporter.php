@@ -42,6 +42,9 @@ class Reign_Demo_Exporter {
         // Load required files
         $this->load_dependencies();
         
+        // Initialize settings
+        new Reign_Demo_Exporter_Settings();
+        
         // Initialize hooks
         add_action('init', array($this, 'load_textdomain'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
@@ -56,8 +59,10 @@ class Reign_Demo_Exporter {
     }
     
     private function load_dependencies() {
+        require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-utils.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-exporter.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-content-scanner.php';
+        require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-settings.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-plugin-scanner.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-file-scanner.php';
         require_once REIGN_DEMO_EXPORTER_PATH . 'includes/class-manifest-generator.php';
@@ -80,6 +85,7 @@ class Reign_Demo_Exporter {
     }
     
     public function add_admin_menu() {
+        // Add export page under Tools
         add_submenu_page(
             'tools.php',
             __('Reign Demo Export', 'reign-demo-exporter'),
@@ -88,11 +94,25 @@ class Reign_Demo_Exporter {
             'reign-demo-export',
             array($this, 'render_admin_page')
         );
+        
+        // Add settings page under Settings
+        add_options_page(
+            __('Reign Demo Exporter Settings', 'reign-demo-exporter'),
+            __('Reign Demo Exporter', 'reign-demo-exporter'),
+            'manage_options',
+            'reign-demo-exporter-settings',
+            array($this, 'render_settings_page')
+        );
     }
     
     public function render_admin_page() {
         $admin = new Reign_Demo_Exporter_Admin();
         $admin->render();
+    }
+    
+    public function render_settings_page() {
+        $settings = new Reign_Demo_Exporter_Settings();
+        $settings->render_settings_page();
     }
     
     public function enqueue_admin_assets($hook) {
@@ -156,10 +176,10 @@ class Reign_Demo_Exporter {
 Options -Indexes
         ';
         
-        file_put_contents(REIGN_DEMO_EXPORT_DIR . '.htaccess', trim($htaccess_content));
+        @file_put_contents(REIGN_DEMO_EXPORT_DIR . '.htaccess', trim($htaccess_content));
         
         // Create index.php for security
-        file_put_contents(REIGN_DEMO_EXPORT_DIR . 'index.php', '<?php // Silence is golden');
+        @file_put_contents(REIGN_DEMO_EXPORT_DIR . 'index.php', '<?php // Silence is golden');
     }
 }
 
